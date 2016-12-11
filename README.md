@@ -30,13 +30,13 @@ Modify the .uproject file to have the additional modules added here:
 	
 Be sure to add AEFramework module to the Build.cs of any module that depends on it
 
-PublicDependencyModuleNames.AddRange(new string[] { ..., "AEFramework" });
+	PublicDependencyModuleNames.AddRange(new string[] { ..., "AEFramework" });
 
 
 Add AEFramework to the Target.cs files
 
 .Target.cs
-OutExtraModuleNames.AddRange( new string[] { .., "AEFramework" } );
+	OutExtraModuleNames.AddRange( new string[] { .., "AEFramework" } );
 
 Editor.Target.cs
-OutExtraModuleNames.AddRange( new string[] { ... "AEFramework", "AEFrameworkEditor" } );
+	OutExtraModuleNames.AddRange( new string[] { ... "AEFramework", "AEFrameworkEditor" } );
