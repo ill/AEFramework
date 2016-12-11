@@ -50,6 +50,30 @@ FORCEINLINE_DEBUGGABLE bool GetOverrideBoolValue(bool bCurrentValue, AEDefaultBo
 	}
 }
 
+//https://wiki.unrealengine.com/Enums_For_Both_C%2B%2B_and_BP#Get_Name_of_Enum_as_String
+template<typename TEnum>
+static FORCEINLINE_DEBUGGABLE FString GetEnumValueToString(const FString& Name, TEnum Value)
+{
+	const UEnum* enumPtr = FindObject<UEnum>(ANY_PACKAGE, *Name, true);
+	if (!enumPtr)
+	{
+		return FString("Invalid");
+	}
+
+	return enumPtr->GetEnumName((int32)Value);
+}
+
+template <typename EnumType>
+static FORCEINLINE EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
+{
+	UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
+	if (!Enum)
+	{
+		return EnumType(0);
+	}
+	return (EnumType)Enum->FindEnumIndex(FName(*String));
+}
+
 ////////////////////////////////////
 //Animation
 
@@ -163,6 +187,12 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utility")
     static void SetAttachedActorsEnableCollision(AActor * Actor, bool bEnabled);
+
+	/**
+	Mirrors a component horizontally
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Utility")
+	static void HorzMirrorComponent(USceneComponent * Component);
 
 	/**
 	Goes through the component heirarchy from RootComponent and finds the first component that has the named socket name in the heirarchy.

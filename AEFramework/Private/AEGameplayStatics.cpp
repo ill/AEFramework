@@ -134,6 +134,12 @@ void UAEGameplayStatics::SetAttachedActorsEnableCollision(AActor * Actor, bool b
 	});
 }
 
+void UAEGameplayStatics::HorzMirrorComponent(USceneComponent * Component)
+{
+	Component->SetRelativeTransform(FTransform(FQuat::Identity, FVector::ZeroVector, FVector(1.f, -1.f, 1.f)) * Component->GetRelativeTransform(),
+		false, NULL, ETeleportType::TeleportPhysics);
+}
+
 USceneComponent * UAEGameplayStatics::FindAttachedComponentWithSocket(USceneComponent * RootComponent, FName Socket)
 {
 	USceneComponent * Res = NULL;
