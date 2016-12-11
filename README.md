@@ -36,7 +36,9 @@ Be sure to add AEFramework module to the Build.cs of any module that depends on 
 Add AEFramework to the Target.cs files
 
 .Target.cs
+
 	OutExtraModuleNames.AddRange( new string[] { .., "AEFramework" } );
 
 Editor.Target.cs
+
 	OutExtraModuleNames.AddRange( new string[] { ... "AEFramework", "AEFrameworkEditor" } );
