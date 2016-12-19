@@ -42,7 +42,7 @@ public:
 
 	@return Returns true if it managed to successfully attempt an action, and false, if all attempts failed.
 	*/
-	FORCEINLINE bool AttemptActions(FRandomStream& RandomStream, RandomIndexChooseMethod IndexChooseMethod, RandomListAction Action)
+	FORCEINLINE_DEBUGGABLE bool AttemptActions(FRandomStream& RandomStream, RandomIndexChooseMethod IndexChooseMethod, RandomListAction Action)
 	{
 		if (!List.Num())
 		{
@@ -65,13 +65,10 @@ public:
 			//try again if more results
 			if (List.Num() > 1)
 			{
-				UE_LOG(LG, Log, TEXT("TRandomList::AttemptActionsForProbability attempt at action on failed, trying other actions in the random list."));
-
 				List.RemoveAt(ResultIndex);
 			}
 			else  //if no more results, this area failed to spawn
 			{
-				UE_LOG(LG, Log, TEXT("TRandomList::AttemptActionsForProbability all attempts at an action in a random list failed."));
 				return false;
 			}
 		}

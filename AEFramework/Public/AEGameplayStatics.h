@@ -64,7 +64,7 @@ static FORCEINLINE_DEBUGGABLE FString GetEnumValueToString(const FString& Name, 
 }
 
 template <typename EnumType>
-static FORCEINLINE EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
+static FORCEINLINE_DEBUGGABLE EnumType GetEnumValueFromString(const FString& EnumName, const FString& String)
 {
 	UEnum* Enum = FindObject<UEnum>(ANY_PACKAGE, *EnumName, true);
 	if (!Enum)
@@ -77,9 +77,9 @@ static FORCEINLINE EnumType GetEnumValueFromString(const FString& EnumName, cons
 ////////////////////////////////////
 //Animation
 
-FAnimMontageInstance * PlayMontage(UAnimMontage * Montage, UAnimInstance * AnimInstance, float Rate = 1.f);
+AEFRAMEWORK_API FAnimMontageInstance * PlayMontage(UAnimMontage * Montage, UAnimInstance * AnimInstance, float Rate = 1.f);
 
-FAnimMontageInstance * PlayMontageWithDuration(UAnimMontage * Montage, UAnimInstance * AnimInstance, float Duration, bool bAccountForBlendoutTime = true);
+AEFRAMEWORK_API FAnimMontageInstance * PlayMontageWithDuration(UAnimMontage * Montage, UAnimInstance * AnimInstance, float Duration, bool bAccountForBlendoutTime = true);
 
 FORCEINLINE_DEBUGGABLE FAnimMontageInstance * PlayMontage(UAnimMontage * Montage, USkeletalMeshComponent * SkeletalMesh, float Rate = 1.f)
 {
@@ -147,9 +147,9 @@ struct AEFRAMEWORK_API FAnimationList
     TArray<UAnimMontage *> AnimationList;
 };
 
-void AttachedActorsHelper(AActor * Actor, USceneComponent * Component, std::function<bool(AActor *)> Func);
+AEFRAMEWORK_API void AttachedActorsHelper(AActor * Actor, USceneComponent * Component, std::function<bool(AActor *)> Func);
 
-void LevelComponentsTraverser(USceneComponent * Component, std::function<bool(USceneComponent *)> Func);
+AEFRAMEWORK_API void LevelComponentsTraverser(USceneComponent * Component, std::function<bool(USceneComponent *)> Func);
 
 UCLASS(CustomConstructor)
 class AEFRAMEWORK_API UAEGameplayStatics : public UBlueprintFunctionLibrary

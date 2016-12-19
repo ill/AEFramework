@@ -22,7 +22,7 @@ public:
 
 	struct BucketInfo 
 	{
-		FORCEINLINE BucketInfo(const float& probability, const int32& result)
+		FORCEINLINE_DEBUGGABLE BucketInfo(const float& probability, const int32& result)
 			: ProbabilityBoundary(probability),
 			Result(result)
 		{}
@@ -45,7 +45,7 @@ public:
 
 	@return Returns true if it managed to successfully attempt an action, and false, if all attempts failed.
 	*/
-	FORCEINLINE bool AttemptActions(FRandomStream& RandomStream, RandomBucketAction Action)
+	FORCEINLINE_DEBUGGABLE bool AttemptActions(FRandomStream& RandomStream, RandomBucketAction Action)
 	{
 		if (!GetBuckets().Num())
 		{
@@ -68,13 +68,10 @@ public:
 			//try again if more results
 			if (GetBuckets().Num() > 1)
 			{
-				UE_LOG(LG, Log, TEXT("TRandomBuckets::AttemptActionsForRoll attempt at action on failed, trying other actions in the random buckets list."));
-
 				RemoveBucketForBucketInd(ResultIndex);
 			}
 			else  //if no more results, this area failed to spawn
 			{
-				UE_LOG(LG, Log, TEXT("TRandomBuckets::AttemptActionsForRoll all attempts at an action in a random buckets list failed."));
 				return false;
 			}
 		}
@@ -87,7 +84,7 @@ public:
 		This helps this function determine which value to look at if your array elements have multiple probability values intended for multiple random buckets.
 	*/
 	template<typename ArrayType>
-	FORCEINLINE void BuildFromArray(const TArray<ArrayType>& objectArray, float * firstProbabilityValue)
+	FORCEINLINE_DEBUGGABLE void BuildFromArray(const TArray<ArrayType>& objectArray, float * firstProbabilityValue)
 	{
 		SIZE_T probabilityValueOffset = (SIZE_T)firstProbabilityValue - (SIZE_T)(&objectArray[0]);
 
@@ -106,7 +103,7 @@ public:
 	normalize out to .01 and .99.
 	@param result The result that would be returned for this bucket
 	*/
-	FORCEINLINE void PreAddResult(const float& Probability, const int32& Result) 
+	FORCEINLINE_DEBUGGABLE void PreAddResult(const float& Probability, const int32& Result)
 	{
 		Buckets.Emplace(Probability, Result);
 	}
@@ -115,7 +112,7 @@ public:
 	Call this after all preAddResult calls are done to normalize the buckets.
 	You shouldn't call preAddResult any more after this, but you can call removeResult.
 	*/
-	FORCEINLINE void NormalizeBuckets()
+	FORCEINLINE_DEBUGGABLE void NormalizeBuckets()
 	{
 		//get the total of the probabilities
 		float Total = (float)0;
@@ -142,7 +139,7 @@ public:
 
 	If the result isn't in the buckets, nothing happens and returns false.  Otherwise returns true.
 	*/
-	FORCEINLINE bool RemoveResult(int32 Result) 
+	FORCEINLINE_DEBUGGABLE bool RemoveResult(int32 Result)
 	{
 		if (Buckets.Num() == 0) 
 		{
@@ -171,7 +168,7 @@ public:
 		return true;
 	}
 
-	FORCEINLINE void RemoveBucketForProbability(float Probability)
+	FORCEINLINE_DEBUGGABLE void RemoveBucketForProbability(float Probability)
 	{
 		int32 BucketInd = FindResultIndexForProbability(Probability);
 
@@ -187,7 +184,7 @@ public:
 	This automatically recalculates the probabilities of other buckets being chosen
 	to account for this bucket being removed based on the removed bucket's probability.
 	*/
-	FORCEINLINE void RemoveBucketForBucketInd(int32 BucketInd)
+	FORCEINLINE_DEBUGGABLE void RemoveBucketForBucketInd(int32 BucketInd)
 	{
 		check(BucketInd < Buckets.Num());
 
@@ -221,7 +218,7 @@ public:
 
 	@param Some value between 0.0 and 1.0 provided by your favorite random number generator.
 	*/
-	FORCEINLINE int32 GetResult(float Probability) const
+	FORCEINLINE_DEBUGGABLE int32 GetResult(float Probability) const
 	{
 		int32 ResultInd = FindResultIndexForProbability(Probability);
 
@@ -233,12 +230,12 @@ public:
 		return (int32)-1;
 	}
 
-	FORCEINLINE int32 GetResultForResultIndex(int32 ResultInd) const
+	FORCEINLINE_DEBUGGABLE int32 GetResultForResultIndex(int32 ResultInd) const
 	{
 		return Buckets[ResultInd].Result;
 	}
 
-	FORCEINLINE int32 FindResultIndexForProbability(float Probability) const
+	FORCEINLINE_DEBUGGABLE int32 FindResultIndexForProbability(float Probability) const
 	{
 		check(Probability >= (float)0 && Probability <= (float)1);
 
@@ -258,17 +255,17 @@ public:
 		return -1;
 	}
 	
-	FORCEINLINE void Empty() 
+	FORCEINLINE_DEBUGGABLE void Empty()
 	{
 		Buckets.Empty();
 	}
 
-	FORCEINLINE const TArray<BucketInfo>& GetBuckets() const 
+	FORCEINLINE_DEBUGGABLE const TArray<BucketInfo>& GetBuckets() const
 	{
 		return Buckets;
 	}
 	
-	FORCEINLINE float GetBucketProbability(int32 Element) const 
+	FORCEINLINE_DEBUGGABLE float GetBucketProbability(int32 Element) const
 	{
 		return Buckets.Num() == 0
 			? 0.f
@@ -277,7 +274,7 @@ public:
 				: Buckets[Element].ProbabilityBoundary - Buckets[Element - 1].ProbabilityBoundary;
 	}
 
-	FORCEINLINE const void GetResultSet(TSet<int32>& Results) const
+	FORCEINLINE_DEBUGGABLE const void GetResultSet(TSet<int32>& Results) const
 	{
 		for (int32 Bucket = 0; Bucket < Buckets.Num(); ++Bucket)
 		{
