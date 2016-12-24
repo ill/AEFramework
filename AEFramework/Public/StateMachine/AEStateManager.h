@@ -3,7 +3,6 @@
 #include "AEStateManager.generated.h"
 
 class UAEState;
-class UAEStateGenerator;
 
 UCLASS(BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew, Within = Actor)
 class AEFRAMEWORK_API UAEStateManager : public UObject
@@ -62,13 +61,7 @@ public:
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State")
 	TArray<TSubclassOf<UAEState>> StateClasses;
-
-	/**
-	Use this to pass in additional state generators that will create states on the fly before initialization.
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State")
-	TArray<TSubclassOf<UAEStateGenerator>> StateGeneratorClasses;
-    
+	    
 	UFUNCTION(BlueprintCallable, Category = "State")
 	int32 GetStateIndexForClass(TSubclassOf<UAEState> StateClass) const;
     
