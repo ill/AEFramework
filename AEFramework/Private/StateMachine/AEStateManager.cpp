@@ -2,10 +2,21 @@
 #include "AEGameplayStatics.h"
 #include "AEStateManager.h"
 #include "AEState.h"
+#include "AEStateGenerator.h"
 
-bool UAEStateManager::Initialize()
+bool UAEStateManager::Initialize_Implementation()
 {
 	bool bAnyErrors = false;
+
+	TArray<UAEStateGenerator *> CurrentStateGenerators;
+
+	for (int32 StateGeneratorInd = 0; StateGeneratorInd < StateGeneratorClasses.Num(); ++StateGeneratorInd)
+	{
+		UAEStateGenerator * StateGenerator = NewObject<UAEStateGenerator>(this, StateGeneratorClasses[StateGeneratorInd]);
+		CurrentStateGenerators.Add(StateGenerator);
+
+		StateGenerator->PreInstantiateStates();
+	}	
 
 	for (int32 StateInd = 0; StateInd < StateClasses.Num(); ++StateInd)
 	{		
@@ -27,10 +38,15 @@ bool UAEStateManager::Initialize()
 		}
 	}
 
+	for (int32 StateGeneratorInd = 0; StateGeneratorInd < StateGeneratorClasses.Num(); ++StateGeneratorInd)
+	{
+		CurrentStateGenerators[StateGeneratorInd]->PostInstantiateStates();
+	}
+
 	return !bAnyErrors;
 }
 
-void UAEStateManager::Tick(float DeltaTime)
+void UAEStateManager::Tick_Implementation(float DeltaTime)
 {
 	if (CurrentState && CurrentState->bIsActive)
 	{

@@ -1,9 +1,9 @@
 #pragma once
 
-//#include "AENamedObjectManager.h"
 #include "AEStateManager.generated.h"
 
 class UAEState;
+class UAEStateGenerator;
 
 UCLASS(BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew, Within = Actor)
 class AEFRAMEWORK_API UAEStateManager : public UObject
@@ -25,19 +25,19 @@ public:
 	@return true if initialized with no errors
 		false if initialized with errors
 	*/
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State")
 	bool Initialize();
 
 	/**
 	It's up to the owning actor to call this to tick the current active state.
 	*/
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State")
 	void Tick(float DeltaTime);
 
 	/**
 	Transitions to a new state.
 	*/
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	void ForceGotoState(UAEState * State);
 
 	/**
@@ -46,13 +46,13 @@ public:
 	@param bAllowNull if true, allows the switch if State is NULL
 	@return true if AllowInterruptionByState call passed and successfully transitioned to new state
 	*/
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	bool TryGotoState(UAEState * State, bool bAllowNull = true);
 
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	bool AllowInterruptionByState(UAEState * State);
     
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	UAEState * GetCurrentState() const;
 	
 	/**
@@ -60,26 +60,32 @@ public:
 	Each state should be unique so it can be looked up by class.
 	When making a networked game, just send around the state index being switched to over the network between the different connected players.
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = State)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State")
 	TArray<TSubclassOf<UAEState>> StateClasses;
+
+	/**
+	Use this to pass in additional state generators that will create states on the fly before initialization.
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State")
+	TArray<TSubclassOf<UAEStateGenerator>> StateGeneratorClasses;
     
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	int32 GetStateIndexForClass(TSubclassOf<UAEState> StateClass) const;
     
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	UAEState * GetStateForIndex(int32 StateIndex) const;
 
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
 	UAEState * GetStateForClass(TSubclassOf<UAEState> StateClass) const;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = State)
+	UPROPERTY(BlueprintReadOnly, Category = "State")
 	UAEState * CurrentState;
 
 	/**
 	Instantiated versions of states specified by StateClasses
 	*/
-	UPROPERTY(BlueprintReadOnly, Category = State)
+	UPROPERTY(BlueprintReadOnly, Category = "State")
 	TArray<UAEState *> StateInstances;
 
 	/**

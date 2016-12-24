@@ -12,13 +12,16 @@ class AEFRAMEWORK_API UAEState : public UObject
 public:	
     virtual UWorld* GetWorld() const override;
     
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
+	UAEStateManager * K2_GetOuterUAEStateManager() const;
+
+	UFUNCTION(BlueprintCallable, Category = "State")
 	bool GetIsActive() const;
 	
-	UFUNCTION(BlueprintCallable, Category = State)
+	UFUNCTION(BlueprintCallable, Category = "State")
     void BecomeInactive();
 
-    UFUNCTION(BlueprintCallable, Category = State)
+    UFUNCTION(BlueprintCallable, Category = "State")
     void GotoState(TSubclassOf<UAEState> StateClass);
 		
 protected:
@@ -26,7 +29,7 @@ protected:
     Called when a state is first added to a state manager and lets
     some additional initialization steps occur
     */
-    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = State)
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State")
     void Initialize();
 
 	/**
@@ -34,19 +37,19 @@ protected:
 	Nothing will stop the state from interrupting this one if it's still set to run,
 	this is more to help determine ahead of time if it should be allowed to happen.
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = State)
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
 	bool AllowInterruptionByState(UAEState * State);
 
 	/**
 	Actions that happen when a state begins.
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = State)
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
 	void OnBegin(UAEState * PreviousState);
 
 	/**
 	Actions that happen when a state is interrupted.
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = State)
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
 	void OnInterrupt(UAEState * InterruptingState);
 
     /**
@@ -54,14 +57,14 @@ protected:
     This gets called after OnInterrupt if a state is being interrupted.
     Don't try to set any timers here, they'll all be cleared after.
     */
-    UFUNCTION(BlueprintNativeEvent, Category = State)
+    UFUNCTION(BlueprintNativeEvent, Category = "State")
     void OnBeComeInactive();
 
 	/**
 	Called by the State manager to do any tickable actions.
 	It's upto the actor that owns the parent state manager to tick the state manager so it can tick the state.
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = State)
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
 	void Tick(float DeltaTime);
 		
 protected:
@@ -75,6 +78,11 @@ protected:
 	
 	friend UAEStateManager;
 };
+
+FORCEINLINE_DEBUGGABLE UAEStateManager * UAEState::K2_GetOuterUAEStateManager() const
+{
+	return GetOuterUAEStateManager();
+}
 
 FORCEINLINE_DEBUGGABLE bool UAEState::GetIsActive() const
 {
