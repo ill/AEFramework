@@ -164,7 +164,7 @@ public:
     ////////////////////////////////////
     //Utility
     
-	UFUNCTION(BlueprintCallable, Category = "Utility")
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Utility")
 	static bool GetOverrideBoolValue(bool bCurrentValue, AEDefaultBoolOverrideState::Type OverrideValue);
 
     /**
