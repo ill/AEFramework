@@ -4,8 +4,8 @@
 #include "EdGraph/EdGraphNodeUtils.h" // for FNodeTitleTextTable
 #include "AEAnimGraphNode_CopyBoneFromSceneComponent.generated.h"
 
-UCLASS()
-class AEFRAMEWORKEDITOR_API UAEAnimGraphNode_CopyBoneFromSceneComponent : public UAnimGraphNode_SkeletalControlBase
+UCLASS(MinimalAPI)
+class UAEAnimGraphNode_CopyBoneFromSceneComponent : public UAnimGraphNode_SkeletalControlBase
 {
 	GENERATED_BODY()
 
