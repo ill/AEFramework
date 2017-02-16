@@ -352,3 +352,128 @@ FTransform UAEGameplayStatics::WorldTransformToCharacterModelWorldTransform(cons
 	Res.ConcatenateRotation(FRotator(0.f, -90.f, 0.f).Quaternion());
 	return Res;
 }
+
+FVector UAEGameplayStatics::GetSafeActorSpawnLocation(UPrimitiveComponent * SpawningActorCollision,
+	const FVector& SpawningActorSpawnOriginWorldLocation,
+	const FVector& SpawnedActorWorldLocation,
+	ECollisionChannel TraceChannel,
+	float SpawnedActorRadius,
+	bool bDebugDraw)
+{
+	UWorld * World = SpawningActorCollision->GetWorld();
+
+	FVector StartLocation = SpawningActorSpawnOriginWorldLocation;
+	FVector ResultLocation = SpawnedActorWorldLocation;
+	
+	if (bDebugDraw)
+	{
+		DrawDebugPoint(
+			World,
+			StartLocation,
+			10,  					//size
+			FColor::Blue,
+			true);
+
+		DrawDebugPoint(
+			World,
+			ResultLocation,
+			20,  					//size
+			FColor::Magenta,
+			true);
+	}
+	
+
+	//the idea for this comes from the UT4 source.
+	FCollisionShape TestSphere = FCollisionShape::MakeSphere(SpawnedActorRadius);
+
+	if (bDebugDraw)
+	{
+		DrawDebugSphere(
+			World,
+			ResultLocation,
+			SpawnedActorRadius,
+			8,
+			FColor::Magenta,
+			true);
+
+		//TODO: (ilselets) for now just draw the capsule for the character since I know that's the most common collision shape for this right now
+		UCapsuleComponent * Capsule = Cast<UCapsuleComponent>(SpawningActorCollision);
+
+		if (Capsule)
+		{
+			DrawDebugCapsule(				
+				World,
+				Capsule->GetComponentToWorld().GetLocation(),
+				Capsule->GetScaledCapsuleHalfHeight(),
+				Capsule->GetScaledCapsuleRadius(),
+				Capsule->GetComponentToWorld().GetRotation(),
+				FColor::White,
+				true);
+		}
+	}
+
+	//perform a trace back towards character
+	{
+		FHitResult Hit;
+		if (SpawningActorCollision->SweepComponent(Hit, ResultLocation, StartLocation, FQuat::Identity, TestSphere, false))
+		{
+			StartLocation = Hit.Location + (StartLocation - ResultLocation).GetSafeNormal() * SpawnedActorRadius * 2.f;
+
+			if (bDebugDraw)
+			{
+				DrawDebugSphere(
+					World,
+					StartLocation,
+					SpawnedActorRadius,
+					8,
+					FColor::Yellow,
+					true);
+			}
+		}
+
+		if (bDebugDraw)
+		{
+			DrawDebugDirectionalArrow(
+				World,
+				ResultLocation,
+				StartLocation,
+				5.f,
+				FColor::Yellow,
+				true);
+		}
+	}
+
+	//then perform a trace outward
+	{
+		FCollisionQueryParams Params(FName(TEXT("ActorSafeSpawnLocation")), false, SpawningActorCollision->GetOwner());
+		FHitResult Hit;
+		if (World->SweepSingleByChannel(Hit, StartLocation, ResultLocation, FQuat::Identity, TraceChannel, TestSphere, Params))
+		{
+			ResultLocation = Hit.Location - (ResultLocation - StartLocation).GetSafeNormal();
+
+			if (bDebugDraw)
+			{
+				DrawDebugSphere(
+					World,
+					ResultLocation,
+					SpawnedActorRadius,
+					8,
+					FColor::Red,
+					true);
+			}
+		}
+
+		if (bDebugDraw)
+		{
+			DrawDebugDirectionalArrow(
+				World,
+				StartLocation,
+				ResultLocation,
+				10.f,
+				FColor::Red,
+				true);
+		}
+	}
+
+	return ResultLocation;
+}

@@ -256,6 +256,35 @@ public:
 		USceneComponent * ChildSocketSceneComponent = NULL);
 
 	/**
+	Finds a safe spot for one actor to spawn another actor when the first actor is dangerously close to walls.
+	Usually used for spawning projectiles such that they don't spawn in a wall or through a wall.
+	
+	@param SpawningActorCollision The collision component of the actor that's spawning the other actor that collides against the world
+
+	@param SpawningActorSpawnOriginWorldLocation The world location of the safest spot within the spawning actor to spawn the second actor
+
+	@param SpawnedActorWorldLocation The world location of where the actor is trying to spawn.  This will be adjusted if it ends up being spawned inside walls
+
+	@param TraceChannel The channel on which to perform collision traces.
+		Usually use whatever collision trace collides with the actor being spawned, like WeaponTrace for projectiles.
+
+	@param SpawnedActorRadius The approximate radius of the actor that is being spawned to peform the collision checks.
+		The radius should be smaller than the size of SpawningActorCollision or else the results won't be reliable.
+
+	@param bDebugDraw Debug Draws a bunch of spheres to visualize the process.
+
+	@return Usually it'll just return SpawnedActorWorldLocation if no adjustments are needed.
+		It'll find a spot between SpawnedActorWorldLocation and SpawningActorSpawnOriginWorldLocation to spawn the actor.
+	*/
+	UFUNCTION(BlueprintPure, Category = "Utility")
+	static FVector GetSafeActorSpawnLocation(UPrimitiveComponent * SpawningActorCollision,
+		const FVector& SpawningActorSpawnOriginWorldLocation,
+		const FVector& SpawnedActorWorldLocation,
+		ECollisionChannel TraceChannel,
+		float SpawnedActorRadius = 1.f,
+		bool bDebugDraw = false);
+
+	/**
 	Takes a world transform and returns a modified transform with rotations to account for a character model that's rotated -90 degrees.
 	*/
 	UFUNCTION(BlueprintPure, Category = "Utility")
