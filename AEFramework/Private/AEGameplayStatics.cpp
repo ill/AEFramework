@@ -140,6 +140,78 @@ void UAEGameplayStatics::HorzMirrorComponent(USceneComponent * Component)
 		false, NULL, ETeleportType::TeleportPhysics);
 }
 
+FTransform UAEGameplayStatics::LookatAroundTransform(const FTransform& OriginTransform, const FTransform& RelativeTransform, const FVector& Location)
+{	
+	FVector OriginLocation = OriginTransform.GetLocation();
+
+	//Get the transform relative to OriginTransform
+	FTransform RelOriginTransform = RelativeTransform * OriginTransform;
+
+	//Put that transform back to the origin
+	FTransform RelOriginAtOrigin = RelOriginTransform;
+	RelOriginAtOrigin.SetLocation(OriginLocation);
+
+	//Compute base aim rotation from origin to location such that the up vector points in the direction of AroundOriginAtOrigin's up vector
+	FQuat AimRotation = FRotationMatrix::MakeFromXZ(Location - OriginLocation, RelOriginAtOrigin.GetRotation().GetUpVector()).ToQuat();
+
+	//Get the transform that's aimed at Location from Origin
+	FTransform RelOriginAtOriginAimedAtLocation = RelOriginAtOrigin;
+	RelOriginAtOriginAimedAtLocation.SetRotation(AimRotation);
+
+	//Put the point that's aiming back to the correct place relative to the origin, but now it's aimed
+	FTransform OriginAimedAtLocation = RelativeTransform.Inverse() * RelOriginAtOriginAimedAtLocation;
+	OriginAimedAtLocation.SetLocation(OriginLocation);
+		
+	FRotator OffsetRot = FRotator::ZeroRotator;
+	
+	//Lambda to return the rotation offset in a 2D plane
+	auto PlaneRotOffsetFunc = [](const FVector2D& RelOrigin2D, float DistToLocation) {
+		//if it's perfectly aligned, we're done
+		if (RelOrigin2D.Y == 0.f)
+		{
+			return 0.f;
+		}
+
+		float RotRadius = RelOrigin2D.Size();
+
+		float AngleToRelLoc = RelOrigin2D.X == 0.f
+			? HALF_PI													//90 degrees, optimizing out the need to calculate this if not needed
+			: FMath::Atan2(FMath::Abs(RelOrigin2D.Y), RelOrigin2D.X);
+
+		//normally finding the tangent point to a circle is easy with a right angle, but we may not be at a right angle so find the actual angle
+		float AngleBetweenRelLocAndStraight = PI - AngleToRelLoc;		//180 - AngleToRelLoc
+
+		//use law of sines to find other angles in the triangle
+		//first we have enough info to find the opposite angle that we need, and then knowing that all angles add to 180, we find the one we actually need
+
+		float OppositeAngle = FMath::Asin((RotRadius * FMath::Sin(AngleBetweenRelLocAndStraight)) / DistToLocation);
+		
+		float Res = FMath::RadiansToDegrees(AngleToRelLoc - (PI - OppositeAngle - AngleBetweenRelLocAndStraight));
+
+		//flip direction if needed
+		if (RelOrigin2D.Y < 0.f)
+		{
+			Res = -Res;
+		}
+
+		return Res;
+	};
+	
+	FVector RelativeLocation = RelativeTransform.GetLocation();
+	float DistToLocation = FVector::Dist(OriginLocation, Location);
+
+	//XY plane (Yaw, rotates around Z axis)
+	OffsetRot.Yaw = -PlaneRotOffsetFunc(FVector2D(RelativeLocation), DistToLocation);
+
+	//XZ plane (Pitch, rotates around Y axis)
+	OffsetRot.Pitch = -PlaneRotOffsetFunc(FVector2D(RelativeLocation.X, RelativeLocation.Z), DistToLocation);
+		
+	//Offset the return value by the right amount so the relative transform aims perfectly at the location
+	OriginAimedAtLocation.ConcatenateRotation(OffsetRot.Quaternion());
+	
+	return OriginAimedAtLocation;
+}
+
 USceneComponent * UAEGameplayStatics::FindAttachedComponentWithSocket(USceneComponent * RootComponent, FName Socket)
 {
 	USceneComponent * Res = NULL;
@@ -322,13 +394,7 @@ FTransform UAEGameplayStatics::GetRelativeTransformBetweenComponents(USceneCompo
 {
 	if (Child && Parent)
 	{
-		FTransform RelTransform = FTransform::Identity;
-		
-		RelTransform = RelTransform * GetRelativeTransformToSocket(Parent, ParentSocketName, ParentSocketSceneComponent);
-
-		RelTransform = GetRelativeTransformToSocket(Child, ChildSocketName, ChildSocketSceneComponent).Inverse() * RelTransform;
-
-		return RelTransform;
+		return GetRelativeTransformToSocket(Child, ChildSocketName, ChildSocketSceneComponent).GetRelativeTransform(GetRelativeTransformToSocket(Parent, ParentSocketName, ParentSocketSceneComponent));
 	}
 	else
 	{

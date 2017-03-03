@@ -195,6 +195,13 @@ public:
 	static void HorzMirrorComponent(USceneComponent * Component);
 
 	/**
+	Returns the new transform of OriginTransform such that the RelativeTransform aims at Location down its X axis.
+	Useful for aiming guns or turrets or other objects around some origin point.
+	*/
+	UFUNCTION(BlueprintPure, Category = "Utility")
+	static FTransform LookatAroundTransform(const FTransform& OriginTransform, const FTransform& RelativeTransform, const FVector& Location);
+	
+	/**
 	Goes through the component heirarchy from RootComponent and finds the first component that has the named socket name in the heirarchy.
 	*/
 	UFUNCTION(BlueprintPure, Category = "Utility")
