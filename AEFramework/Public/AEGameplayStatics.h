@@ -269,8 +269,10 @@ public:
 	@param SpawningActorCollision The collision component of the actor that's spawning the other actor that collides against the world
 
 	@param SpawningActorSpawnOriginWorldLocation The world location of the safest spot within the spawning actor to spawn the second actor
+		For a character this would usually be their eyes location
 
-	@param SpawnedActorWorldLocation The world location of where the actor is trying to spawn.  This will be adjusted if it ends up being spawned inside walls
+	@param SpawnedActorWorldLocation The world location of where the actor is trying to spawn.  
+		This will be adjusted if it ends up being spawned inside walls
 
 	@param TraceChannel The channel on which to perform collision traces.
 		Usually use whatever collision trace collides with the actor being spawned, like WeaponTrace for projectiles.
@@ -289,6 +291,55 @@ public:
 		const FVector& SpawnedActorWorldLocation,
 		ECollisionChannel TraceChannel,
 		float SpawnedActorRadius = 1.f,
+		bool bDebugDraw = false);
+
+	/**
+	Finds a safe spot for one actor to spawn something that comes out in a line, like a projectile or hitscan trace.
+	This way, if a player is aiming their crosshairs through a window or some other opening, they shoot what they think
+	they're aiming at and not the wall to the side where their gun is.  
+	This would be annoying with bullet weapons, and very annoying and dangerous with rockets, for example...
+	It may look slightly odd if you really really pay close attention and look for it, but it's better than pissing the player off.
+	I experimented with other first person shooters and they do this too, and it's not noticeable.
+
+	This also internally calls GetSafeActorSpawnLocation.
+
+	@param SpawningActorCollision The collision component of the actor that's spawning the trace that collides against the world
+
+	@param SpawningActorSpawnOriginWorldLocation The world location of the safest spot within the spawning actor to spawn the second actor
+		For a character this would usually be their eyes location
+
+	@param SpawnedActorWorldLocation The world location of where the trace is trying to spawn.  
+		This will be first adjusted with GetSafeActorSpawnLocation if it ends up being spawned inside walls.
+		It will be further adjusted so it reaches SpawnedTraceDestinationWorldLocation without being obstructed if possible, depending on radius.
+
+	@param SpawnedTraceDestinationWorldLocation The world location of where the trace is trying to reach.
+		This would usually be what a player is aiming at with their crosshairs, 
+		so you'd first want to do a line trace from the player eyes to the crosshair location.
+
+	@param TraceChannel The channel on which to perform collision traces.
+		Usually use whatever collision trace collides with the actor being spawned, like WeaponTrace for projectiles.
+
+	@param SpawnedTraceRadius The approximate radius of the trace that is being spawned to peform the collision checks.
+		This should be the radius of a projectile being shot.  It'll perform traces using a capsule.
+		You should use a radius of 0 for things that are simply a line trace like lasers or bullets.
+		The radius should be smaller than the size of SpawningActorCollision or else the results won't be reliable.
+
+	@param MaxTestDist The maximum distance to test from the start of a trace.
+		This is so the test doesn't happen too far from the character and only applies to objects that are close.
+
+	@param bDebugDraw Debug Draws a bunch of shapes to visualize the process.
+
+	@return Usually it'll just return a transform that points from SpawningActorSpawnOriginWorldLocation to SpawnedTraceDestinationWorldLocation if no adjustments are needed.
+		It'll find a spot between SpawnedTraceOriginWorldLocation and SpawnedTraceOriginWorldLocation to spawn the trace.
+	*/
+	UFUNCTION(BlueprintPure, Category = "Utility")
+	static FTransform GetSafeLineTraceSpawnTransform(UPrimitiveComponent * SpawningActorCollision, 
+		const FVector& SpawningActorSpawnOriginWorldLocation, 
+		const FVector& SpawnedTraceOriginWorldLocation,
+		const FVector& SpawnedTraceDestinationWorldLocation,
+		ECollisionChannel TraceChannel,
+		float SpawnedTraceRadius = 1.f,
+		float MaxTestDist = 1024.f,
 		bool bDebugDraw = false);
 
 	/**

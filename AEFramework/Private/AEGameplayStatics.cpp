@@ -419,6 +419,8 @@ FTransform UAEGameplayStatics::WorldTransformToCharacterModelWorldTransform(cons
 	return Res;
 }
 
+
+
 FVector UAEGameplayStatics::GetSafeActorSpawnLocation(UPrimitiveComponent * SpawningActorCollision,
 	const FVector& SpawningActorSpawnOriginWorldLocation,
 	const FVector& SpawnedActorWorldLocation,
@@ -540,6 +542,133 @@ FVector UAEGameplayStatics::GetSafeActorSpawnLocation(UPrimitiveComponent * Spaw
 				true);
 		}
 	}
-
+	
 	return ResultLocation;
+}
+
+FTransform UAEGameplayStatics::GetSafeLineTraceSpawnTransform(UPrimitiveComponent * SpawningActorCollision,
+	const FVector& SpawningActorSpawnOriginWorldLocation,
+	const FVector& SpawnedTraceOriginWorldLocation,
+	const FVector& SpawnedTraceDestinationWorldLocation,
+	ECollisionChannel TraceChannel,
+	float SpawnedTraceRadius,
+	float MaxTestDist,
+	bool bDebugDraw)
+{
+	//First GetSafeActorSpawnLocation
+	FVector AdjustedSpawnLocation = GetSafeActorSpawnLocation(SpawningActorCollision, 
+		SpawningActorSpawnOriginWorldLocation,
+		SpawnedTraceOriginWorldLocation,
+		TraceChannel,
+		SpawnedTraceRadius,
+		bDebugDraw);
+	 
+	//Now do the traces
+	UWorld * World = SpawningActorCollision->GetWorld();
+	
+	FCollisionQueryParams QueryParams(FName(TEXT("SafeLineTraceSpawnTransform")), false, SpawningActorCollision->GetOwner());
+
+	auto IsOverlapFound = [&SpawnedTraceDestinationWorldLocation, 
+		TraceChannel, 
+		SpawnedTraceRadius, 
+		MaxTestDist,
+		&QueryParams,
+		World,
+		bDebugDraw]
+		(const FVector& StartLocation)
+	{
+		FVector TestDirection = (SpawnedTraceDestinationWorldLocation - StartLocation).GetSafeNormal();
+
+		FVector EndLocation = StartLocation + TestDirection * MaxTestDist;
+				
+		//perform a simple line trace if the radius is small
+		if (SpawnedTraceRadius <= 0.f)
+		{
+			bool Res = World->LineTraceTestByChannel(StartLocation, EndLocation, TraceChannel, QueryParams);
+
+			if (bDebugDraw)
+			{
+				DrawDebugLine(World,
+					StartLocation,
+					EndLocation,
+					Res ? FColor::Red : FColor::Green,
+					true);
+			}
+
+			return Res;
+		}
+		else
+		{
+			float CapsuleHalfHeight = FVector::Dist(StartLocation, EndLocation) * .5f;
+			FCollisionShape TestCapsule = FCollisionShape::MakeCapsule(SpawnedTraceRadius, CapsuleHalfHeight);
+
+			TestDirection.ToOrientationQuat();
+
+			FVector CapsuleLocation = (StartLocation + EndLocation) * .5f;
+			FQuat CapsuleOrientation = FQuat::FindBetweenNormals(FVector::UpVector, TestDirection);
+
+			bool Res = World->OverlapBlockingTestByChannel(CapsuleLocation,
+				CapsuleOrientation,
+				TraceChannel,
+				TestCapsule,
+				QueryParams);
+
+			if (bDebugDraw)
+			{
+				DrawDebugCapsule(World,
+					CapsuleLocation,
+					CapsuleHalfHeight,
+					SpawnedTraceRadius,
+					CapsuleOrientation,
+					Res ? FColor::Red : FColor::Green, 
+					true);
+			}
+
+			return Res;
+		}
+	};
+
+	auto MakeReturnTransform = [&SpawnedTraceDestinationWorldLocation]
+		(const FVector& StartLocation) 
+	{
+		return FTransform((SpawnedTraceDestinationWorldLocation - StartLocation).ToOrientationQuat(), StartLocation);
+	};
+
+	//See if simply trying from the normal location is good
+	if (!IsOverlapFound(AdjustedSpawnLocation))
+	{
+		return MakeReturnTransform(AdjustedSpawnLocation);
+	}
+
+	//Measure the distance between SpawningActorSpawnOriginWorldLocation and SpawnedTraceOriginWorldLocation
+	//to determine an optimal number of traces to perform
+	float DistBetweenTargetAndSafePoint;
+	FVector DirectionBetweenTargetAndSafePoint;
+	
+	//For some reason ToDirectionAndLength flips the direction so subtracting it the other way
+	(SpawningActorSpawnOriginWorldLocation - AdjustedSpawnLocation).ToDirectionAndLength(DirectionBetweenTargetAndSafePoint, DistBetweenTargetAndSafePoint);
+	
+	float DistBetweenTraces = FMath::Max(2.f, SpawnedTraceRadius * 2.5f);
+
+	//Omit the first and last traces, we already did the first trace
+	//If all traces between fail, just return from SpawningActorSpawnOriginWorldLocation
+	int32 NumTraces = (DistBetweenTargetAndSafePoint / DistBetweenTraces) - 2;
+		
+	FVector CurrentTraceOrigin = AdjustedSpawnLocation + DistBetweenTraces * DirectionBetweenTargetAndSafePoint;
+
+	for (int32 Trace = 0; Trace <= NumTraces; ++Trace, CurrentTraceOrigin += DistBetweenTraces * DirectionBetweenTargetAndSafePoint)
+	{
+		if (!IsOverlapFound(CurrentTraceOrigin))
+		{
+			return MakeReturnTransform(CurrentTraceOrigin);
+		}
+	}
+
+	//If debug drawing, just call the check method here to trigger a debug draw
+	if (bDebugDraw)
+	{
+		IsOverlapFound(SpawningActorSpawnOriginWorldLocation);
+	}
+
+	return MakeReturnTransform(SpawningActorSpawnOriginWorldLocation);
 }
