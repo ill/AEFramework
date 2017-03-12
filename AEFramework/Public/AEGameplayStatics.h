@@ -339,7 +339,7 @@ public:
 		const FVector& SpawnedTraceDestinationWorldLocation,
 		ECollisionChannel TraceChannel,
 		float SpawnedTraceRadius = 1.f,
-		float MaxTestDist = 1024.f,
+		float MaxTestDist = 256.f,
 		bool bDebugDraw = false);
 
 	/**

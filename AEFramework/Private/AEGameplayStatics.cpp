@@ -577,9 +577,13 @@ FTransform UAEGameplayStatics::GetSafeLineTraceSpawnTransform(UPrimitiveComponen
 		bDebugDraw]
 		(const FVector& StartLocation)
 	{
-		FVector TestDirection = (SpawnedTraceDestinationWorldLocation - StartLocation).GetSafeNormal();
+		float TestDistance;
+		FVector TestDirection;
 
-		FVector EndLocation = StartLocation + TestDirection * MaxTestDist;
+		(SpawnedTraceDestinationWorldLocation - StartLocation).ToDirectionAndLength(TestDirection, TestDistance);
+		TestDistance = FMath::Min(TestDistance, MaxTestDist) * .98f;	//Use a large fraction of the distance to account for inaccuracies
+
+		FVector EndLocation = StartLocation + TestDirection * TestDistance;
 				
 		//perform a simple line trace if the radius is small
 		if (SpawnedTraceRadius <= 0.f)
