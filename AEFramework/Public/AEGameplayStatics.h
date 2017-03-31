@@ -342,6 +342,9 @@ public:
 		float MaxTestDist = 256.f,
 		bool bDebugDraw = false);
 
+	UFUNCTION(BlueprintPure, Category = "Utility")
+	static FTransform ApplyRandomConeToTransform(const FTransform& Transform, float RandomConeHalfAngleDegrees);
+
 	/**
 	Takes a world transform and returns a modified transform with rotations to account for a character model that's rotated -90 degrees.
 	*/
@@ -354,6 +357,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static void SeamlessTravel(UWorld * World, const FString& URL);
 	
+	typedef std::function<void(int32 TimeNumber)> RandomTimesFunc;
+
+	/**
+	Performs an action some number of times
+	*/
+	//TODO: a function that takes a delegate for Blueprints if needed
+	//UFUNCTION(BlueprintCallable, Category = "Utility")
+	//static void PerformActionRandomTimes(int32 MinTimes, int32 MaxTimes, RandomTimesDelegate Action);
+
+	static void PerformActionRandomTimes(int32 MinTimes, int32 MaxTimes, RandomTimesFunc Action);
+
 	////////////////////////////////////
 	//Animation
     UFUNCTION(BlueprintPure, Category = "Animation")

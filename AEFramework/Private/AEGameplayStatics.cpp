@@ -676,3 +676,37 @@ FTransform UAEGameplayStatics::GetSafeLineTraceSpawnTransform(UPrimitiveComponen
 
 	return MakeReturnTransform(SpawningActorSpawnOriginWorldLocation);
 }
+
+FTransform UAEGameplayStatics::ApplyRandomConeToTransform(const FTransform& Transform, float RandomConeHalfAngleDegrees)
+{
+	//TODO: make this take a RandomSeed if needed for networked games later
+	if (RandomConeHalfAngleDegrees > 0.f)
+	{
+		FTransform Res(Transform);
+
+		Res.ConcatenateRotation(FMath::VRandCone(FVector::ForwardVector,
+			FMath::DegreesToRadians(RandomConeHalfAngleDegrees)).Rotation().Quaternion());
+
+		return Res;
+	}
+	else
+	{
+		return Transform;
+	}
+}
+
+void UAEGameplayStatics::PerformActionRandomTimes(int32 MinTimes, int32 MaxTimes, RandomTimesFunc Action)
+{
+	//TODO: make this take a RandomSeed if needed for networked games later
+	int32 NumTimes = FMath::Max(MinTimes, 1);
+
+	if (MinTimes < MaxTimes)
+	{
+		NumTimes = FMath::RandRange(MinTimes, MaxTimes);
+	}
+
+	for (int32 Time = 0; Time < NumTimes; ++Time)
+	{
+		Action(Time);
+	}
+}
