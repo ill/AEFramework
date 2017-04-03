@@ -4,6 +4,12 @@
 
 UWorld* UAEState::GetWorld() const
 {
+	if (HasAllFlags(RF_ClassDefaultObject))
+	{
+		// If we are a CDO, we must return nullptr instead of calling Outer->GetWorld() to fool UObject::ImplementsGetWorld.
+		return nullptr;
+	}
+
     return GetOuterUAEStateManager()->GetWorld();
 }
 
