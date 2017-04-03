@@ -47,10 +47,15 @@ void UAEStateManager::ForceGotoState(UAEState * State)
 		return;
 	}
 
-	if (CurrentState && CurrentState->bIsActive)
+	if (CurrentState)
 	{
-		CurrentState->OnInterrupt(State);
-		CurrentState->BecomeInactive();
+		if (CurrentState->bIsActive)
+		{
+			CurrentState->OnInterrupt(State);
+			CurrentState->BecomeInactive();
+		}
+
+		CurrentState->OnEnd(State);
 	}
 		
 	UAEState * PrevState = CurrentState;

@@ -45,12 +45,18 @@ protected:
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "State")
 	void OnBegin(UAEState * PreviousState);
-
+	
 	/**
 	Actions that happen when a state is interrupted.
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "State")
 	void OnInterrupt(UAEState * InterruptingState);
+
+	/**
+	Actions that happen when a new state is starting and the current state is ending.
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = "State")
+	void OnEnd(UAEState * NextState);
 
     /**
     Actions that happen when a state becomes inactive (AKA stops)

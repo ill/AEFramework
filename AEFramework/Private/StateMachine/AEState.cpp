@@ -34,6 +34,10 @@ void UAEState::OnInterrupt_Implementation(UAEState * InterruptingState)
     check(GetIsActive());
 }
 
+void UAEState::OnEnd_Implementation(UAEState * NextState)
+{
+}
+
 void UAEState::OnBeComeInactive_Implementation()
 {
 }
