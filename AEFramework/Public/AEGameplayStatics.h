@@ -353,6 +353,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Utility")
 	static UWorld * GetObjectWorld(UObject * Object);
+	
+	UFUNCTION(BlueprintPure, Category = "Utility", meta = (WorldContext = "WorldContextObject"))
+	static UWorld * GetContextWorld(UObject * WorldContextObject);	
+
+	UFUNCTION(BlueprintCallable, Category = "Utility")
+	static void NavReleaseInitialBuildingLock(UWorld * World);
 
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static void SeamlessTravel(UWorld * World, const FString& URL);
@@ -408,6 +414,21 @@ FORCEINLINE_DEBUGGABLE void UAEGameplayStatics::SeamlessTravel(UWorld * World, c
 FORCEINLINE_DEBUGGABLE UWorld * UAEGameplayStatics::GetObjectWorld(UObject * Object)
 {
 	return Object->GetWorld();
+}
+
+FORCEINLINE_DEBUGGABLE UWorld * UAEGameplayStatics::GetContextWorld(UObject * WorldContextObject)
+{
+	return GEngine->GetWorldFromContextObject(WorldContextObject);
+}
+
+FORCEINLINE_DEBUGGABLE void UAEGameplayStatics::NavReleaseInitialBuildingLock(UWorld * World)
+{
+	auto NavSystem = World->GetNavigationSystem();
+	
+	if (NavSystem)
+	{
+		NavSystem->ReleaseInitialBuildingLock();
+	}
 }
 
 ////////////////////////////////////
