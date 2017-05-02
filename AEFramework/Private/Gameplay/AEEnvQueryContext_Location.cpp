@@ -19,6 +19,7 @@ void UAEEnvQueryContext_Location::ProvideContext(FEnvQueryInstance& QueryInstanc
 	if (!X)
 	{
 		UE_LOG_ON_SCREEN(AE, Warning, 5.f, FColor::Red, TEXT("UAEEnvQueryContext_Location named \"%s\" didn't find parameter \"%s\" in the query instance"), *GetName(), *PositionQueryXParameterName.ToString());
+		UEnvQueryItemType_Point::SetContextHelper(ContextData, FVector(0.f));
 		return;
 	}
 
@@ -27,6 +28,7 @@ void UAEEnvQueryContext_Location::ProvideContext(FEnvQueryInstance& QueryInstanc
 	if (!Y)
 	{
 		UE_LOG_ON_SCREEN(AE, Warning, 5.f, FColor::Red, TEXT("UAEEnvQueryContext_Location named \"%s\" didn't find parameter \"%s\" in the query instance"), *GetName(), *PositionQueryYParameterName.ToString());
+		UEnvQueryItemType_Point::SetContextHelper(ContextData, FVector(0.f));
 		return;
 	}
 
@@ -35,6 +37,7 @@ void UAEEnvQueryContext_Location::ProvideContext(FEnvQueryInstance& QueryInstanc
 	if (!Z)
 	{
 		UE_LOG_ON_SCREEN(AE, Warning, 5.f, FColor::Red, TEXT("UAEEnvQueryContext_Location named \"%s\" didn't find parameter \"%s\" in the query instance"), *GetName(), *PositionQueryZParameterName.ToString());
+		UEnvQueryItemType_Point::SetContextHelper(ContextData, FVector(0.f));
 		return;
 	}
 
