@@ -3,6 +3,7 @@
 #include <functional>
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimInstance.h"
+#include "AITypes.h"
 #include "AEGameplayStatics.generated.h"
 
 #define UE_LOG_ON_SCREEN(CategoryName, Verbosity, TimeToDisplay, DisplayColor, Format, ...) \
@@ -161,6 +162,15 @@ public:
 		: Super(ObjectInitializer)
 	{}
 	
+	////////////////////////////////////
+	//AI
+
+	/**
+	Simply returns FAISystem::InvalidLocation to Blueprint.
+	*/
+	UFUNCTION(BlueprintPure, Category = "AI")
+	static FVector GetAIInvalidLocation();
+
     ////////////////////////////////////
     //Utility
     
@@ -397,6 +407,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Animation")
 	static float GetCameraAnimRateForDuration(UCameraAnim* CameraAnim, float Duration, float BlendoutTime = 0.f);
 };
+
+////////////////////////////////////
+//AI
+
+FORCEINLINE_DEBUGGABLE FVector UAEGameplayStatics::GetAIInvalidLocation()
+{
+	return FAISystem::InvalidLocation;
+}
 
 ////////////////////////////////////
 //Utility
