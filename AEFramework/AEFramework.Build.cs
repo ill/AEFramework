@@ -7,6 +7,6 @@ public class AEFramework : ModuleRules
         MinFilesUsingPrecompiledHeaderOverride = 1;
         bFasterWithoutUnity = true;
 
-        PublicDependencyModuleNames.AddRange( new string[] { "Core", "CoreUObject", "Engine", "AnimGraphRuntime", "AIModule"} );
+        PublicDependencyModuleNames.AddRange( new string[] { "Core", "CoreUObject", "Engine", "AnimGraphRuntime", "AIModule", "UMG"} );
     }
 }
