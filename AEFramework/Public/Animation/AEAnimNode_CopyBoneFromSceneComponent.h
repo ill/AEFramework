@@ -13,7 +13,7 @@ struct AEFRAMEWORK_API FAEAnimNode_CopyBoneFromSceneComponent : public FAnimNode
 	GENERATED_USTRUCT_BODY()
 	
 	/** Name of bone to control. This is the main bone chain to modify from. **/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Copy) 
+	UPROPERTY(EditAnywhere, Category=Copy) 
 	FBoneReference TargetBone;
 
 	/** Source Bone or Socket Name to get transform from */

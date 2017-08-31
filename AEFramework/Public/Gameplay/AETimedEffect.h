@@ -9,7 +9,7 @@ It kicks out the one with the smallest current falloff
 */
 const static int32 MAX_TIMED_EFFECTS = 5;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct AEFRAMEWORK_API FAETimedEffect
 {
 	GENERATED_USTRUCT_BODY()
@@ -24,8 +24,6 @@ struct AEFRAMEWORK_API FAETimedEffect
 
 	UPROPERTY()
 	float Falloff;
-
-
 };
 
 /**
@@ -42,7 +40,7 @@ A maximum of MAX_TIMED_EFFECTS is tracked because you really don't need too many
 
 Once a timed effect falls off below zero, that effect is removed from tracking.
 */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct AEFRAMEWORK_API FAETimedEffectManager
 {
 	GENERATED_USTRUCT_BODY()
