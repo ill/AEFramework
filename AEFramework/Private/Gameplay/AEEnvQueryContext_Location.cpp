@@ -1,8 +1,8 @@
+#include "AEEnvQueryContext_Location.h"
 #include "AEFramework.h"
 #include "AEGameplayStatics.h"
 #include "Runtime/AIModule/Classes/EnvironmentQuery/EnvQueryTypes.h"
 #include "Runtime/AIModule/Classes/EnvironmentQuery/Items/EnvQueryItemType_Point.h"
-#include "AEEnvQueryContext_Location.h"
 
 UAEEnvQueryContext_Location::UAEEnvQueryContext_Location(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -1,4 +1,3 @@
-#include "AEFramework.h"
 #include "AEBlankActor.h"
 
 AAEBlankActor::AAEBlankActor(const FObjectInitializer& ObjectInitializer)

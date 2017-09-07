@@ -3,7 +3,9 @@
 #include <functional>
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimInstance.h"
+#include "Camera/CameraAnim.h"
 #include "AITypes.h"
+#include "AI/Navigation/NavigationSystem.h"
 #include "AEGameplayStatics.generated.h"
 
 #define UE_LOG_ON_SCREEN(CategoryName, Verbosity, TimeToDisplay, DisplayColor, Format, ...) \
@@ -436,7 +438,7 @@ FORCEINLINE_DEBUGGABLE UWorld * UAEGameplayStatics::GetObjectWorld(UObject * Obj
 
 FORCEINLINE_DEBUGGABLE UWorld * UAEGameplayStatics::GetContextWorld(UObject * WorldContextObject)
 {
-	return GEngine->GetWorldFromContextObject(WorldContextObject);
+	return GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
 }
 
 FORCEINLINE_DEBUGGABLE void UAEGameplayStatics::NavReleaseInitialBuildingLock(UWorld * World)

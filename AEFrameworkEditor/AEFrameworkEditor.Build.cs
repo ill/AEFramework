@@ -2,8 +2,10 @@ using UnrealBuildTool;
 
 public class AEFrameworkEditor : ModuleRules
 {
-    public AEFrameworkEditor( TargetInfo Target )
-    {
+    public AEFrameworkEditor(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
         MinFilesUsingPrecompiledHeaderOverride = 1;
         bFasterWithoutUnity = true;
         

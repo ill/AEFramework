@@ -1,6 +1,8 @@
-#include "AEFramework.h"
 #include "AEGameplayStatics.h"
 #include "AEPhysicalActor.h"
+#include "AEFramework.h"
+#include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 
 ////////////////////////////////////
 //Animation

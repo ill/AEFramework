@@ -1,6 +1,5 @@
-#include "AEFramework.h"
-#include "AEGameplayStatics.h"
 #include "AEPhysicalActor.h"
+#include "AEGameplayStatics.h"
 
 AAEPhysicalActor::AAEPhysicalActor(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

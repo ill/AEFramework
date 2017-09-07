@@ -5,16 +5,13 @@
 /**
 *	Simple controller to copy a bone's transform to a bone or socket in another mesh.
 *	TODO: (Engine) Pretty much copy pasted from AnimNode_CopyBone with a few changes.  It was easier to do this than try to extend it.
-*	With every engine update, be sure to update this as well when that implementation changes a bit
+*	With every engine update, be sure to update this as well when that implementation changes a bit.
+*	I may actually be able to just use the CopeBoneDelta control now and pass it the attachbone with a delta to the source socket
 */
-USTRUCT()
+USTRUCT(BlueprintInternalUseOnly)
 struct AEFRAMEWORK_API FAEAnimNode_CopyBoneFromSceneComponent : public FAnimNode_SkeletalControlBase
 {
 	GENERATED_USTRUCT_BODY()
-	
-	/** Name of bone to control. This is the main bone chain to modify from. **/
-	UPROPERTY(EditAnywhere, Category=Copy) 
-	FBoneReference TargetBone;
 
 	/** Source Bone or Socket Name to get transform from */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Copy, meta = (PinShownByDefault))
@@ -22,6 +19,10 @@ struct AEFRAMEWORK_API FAEAnimNode_CopyBoneFromSceneComponent : public FAnimNode
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Copy, meta = (PinShownByDefault))
 	USceneComponent * SourceComponent;
+
+	/** Name of bone to control. This is the main bone chain to modify from. **/
+	UPROPERTY(EditAnywhere, Category=Copy) 
+	FBoneReference TargetBone;
 
 	/** If Translation should be copied */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Copy, meta=(PinShownByDefault))
@@ -35,6 +36,10 @@ struct AEFRAMEWORK_API FAEAnimNode_CopyBoneFromSceneComponent : public FAnimNode
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Copy, meta=(PinShownByDefault))
 	bool bCopyScale;
 
+	/** Space to convert transforms into prior to copying components */
+	UPROPERTY(EditAnywhere, Category = Copy)
+	TEnumAsByte<EBoneControlSpace> ControlSpace;
+
 	FAEAnimNode_CopyBoneFromSceneComponent();
 
 	// FAnimNode_Base interface
@@ -42,7 +47,7 @@ struct AEFRAMEWORK_API FAEAnimNode_CopyBoneFromSceneComponent : public FAnimNode
 	// End of FAnimNode_Base interface
 
 	// FAnimNode_SkeletalControlBase interface
-	virtual void EvaluateBoneTransforms(USkeletalMeshComponent* SkelComp, FCSPose<FCompactPose>& MeshBases, TArray<FBoneTransform>& OutBoneTransforms) override;
+	virtual void EvaluateSkeletalControl_AnyThread(FComponentSpacePoseContext& Output, TArray<FBoneTransform>& OutBoneTransforms) override;
 	virtual bool IsValidToEvaluate(const USkeleton* Skeleton, const FBoneContainer& RequiredBones) override;
 	// End of FAnimNode_SkeletalControlBase interface
 
@@ -51,5 +56,3 @@ private:
 	virtual void InitializeBoneReferences(const FBoneContainer& RequiredBones) override;
 	// End of FAnimNode_SkeletalControlBase interface
 };
-
-

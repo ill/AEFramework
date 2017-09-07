@@ -1,18 +1,16 @@
-#pragma once
-#include "Editor/AnimGraph/Classes/AnimGraphNode_SkeletalControlBase.h"
+#include "CoreMinimal.h"
+#include "UObject/ObjectMacros.h"
+#include "EdGraph/EdGraphNodeUtils.h"
+#include "AnimGraphNode_SkeletalControlBase.h"
 #include "AEAnimNode_CopyBoneFromSceneComponent.h"
-#include "EdGraph/EdGraphNodeUtils.h" // for FNodeTitleTextTable
 #include "AEAnimGraphNode_CopyBoneFromSceneComponent.generated.h"
 
 UCLASS(MinimalAPI)
 class UAEAnimGraphNode_CopyBoneFromSceneComponent : public UAnimGraphNode_SkeletalControlBase
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 
-public:
-	UAEAnimGraphNode_CopyBoneFromSceneComponent(const FObjectInitializer& ObjectInitializer);
-
-	UPROPERTY(EditAnywhere, Category = Settings)
+	UPROPERTY(EditAnywhere, Category=Settings)
 	FAEAnimNode_CopyBoneFromSceneComponent Node;
 
 public:
@@ -24,6 +22,7 @@ public:
 protected:
 	// UAnimGraphNode_SkeletalControlBase interface
 	virtual FText GetControllerDescription() const override;
+	virtual const FAEAnimNode_CopyBoneFromSceneComponent* GetNode() const override { return &Node; }
 	// End of UAnimGraphNode_SkeletalControlBase interface
 
 private:

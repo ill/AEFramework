@@ -1,4 +1,3 @@
-#include "AEFramework.h"
 #include "AECameraModifier_RelativeOffset.h"
 
 bool UAECameraModifier_RelativeOffset::ModifyCamera(float DeltaTime, struct FMinimalViewInfo& InOutPOV)

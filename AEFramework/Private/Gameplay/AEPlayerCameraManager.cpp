@@ -1,7 +1,6 @@
-#include "AEFramework.h"
+#include "AEPlayerCameraManager.h"
 #include "AEGameplayStatics.h"
 #include "AECameraModifier_RelativeOffset.h"
-#include "AEPlayerCameraManager.h"
 
 AAEPlayerCameraManager::AAEPlayerCameraManager(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)

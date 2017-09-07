@@ -1,6 +1,3 @@
-#include "AEFrameworkEditor.h"
-//#include "AnimGraphPrivatePCH.h"
-#include "Editor/AnimGraph/Classes/AnimationGraphSchema.h"
 #include "AEAnimGraphNode_CopyBoneFromSceneComponent.h"
 
 /////////////////////////////////////////////////////

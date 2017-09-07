@@ -1,4 +1,3 @@
-#include "AEFramework.h"
 #include "AETimedEffect.h"
 
 void FAETimedEffectManager::Update(float DeltaTime)
