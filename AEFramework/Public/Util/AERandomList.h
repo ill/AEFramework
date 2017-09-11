@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include "Core.h"
+#include "CoreMinimal.h"
 
 /**
 Similar to RandomBuckets but this is used more when all buckets have an equal chance of being chosen but different distributions of indices are favored.

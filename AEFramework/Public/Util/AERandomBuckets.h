@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include "Core.h"
+#include "CoreMinimal.h"
 
 /**
 Used to help choose from some buckets with a random roll when the different different buckets have different probabilities of being chosen.

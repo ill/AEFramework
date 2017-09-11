@@ -1,6 +1,6 @@
 #include "AEFramework.h"
 
-//Including these for linker reasons
+//Including these for linker reasons, having a cpp file include them forces them to compile properly
 #include "AERandomList.h"
 #include "AERandomBuckets.h"
 

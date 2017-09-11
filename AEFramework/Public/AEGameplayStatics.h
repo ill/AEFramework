@@ -1,11 +1,11 @@
 #pragma once
 
 #include <functional>
-#include "Animation/AnimMontage.h"
-#include "Animation/AnimInstance.h"
-#include "Camera/CameraAnim.h"
+
 #include "AITypes.h"
 #include "AI/Navigation/NavigationSystem.h"
+#include "Camera/CameraAnim.h"
+
 #include "AEGameplayStatics.generated.h"
 
 #define UE_LOG_ON_SCREEN(CategoryName, Verbosity, TimeToDisplay, DisplayColor, Format, ...) \
