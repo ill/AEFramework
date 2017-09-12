@@ -6,8 +6,8 @@ public class AEFramework : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		//MinFilesUsingPrecompiledHeaderOverride = 1;
-        //bFasterWithoutUnity = true;
+		MinFilesUsingPrecompiledHeaderOverride = 1;
+        bFasterWithoutUnity = true;
 
         PublicDependencyModuleNames.AddRange( new string[] { "Core", "CoreUObject", "Engine", "AnimGraphRuntime", "AIModule", "UMG"} );
     }

@@ -5,7 +5,7 @@
 #include "Animation/AnimInstance.h"
 #include "Components/CapsuleComponent.h"
 
-#include "AEFramework.h"
+#include "AELogging.h"
 #include "AEPhysicalActor.h"
 
 ////////////////////////////////////

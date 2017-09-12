@@ -1,6 +1,6 @@
 #include "AEStateManager.h"
 
-#include "AEFramework.h"
+#include "AELogging.h"
 #include "AEGameplayStatics.h"
 #include "AEState.h"
 

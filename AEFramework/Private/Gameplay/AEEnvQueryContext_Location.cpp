@@ -3,7 +3,7 @@
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Point.h"
 
-#include "AEFramework.h"
+#include "AELogging.h"
 #include "AEGameplayStatics.h"
 
 UAEEnvQueryContext_Location::UAEEnvQueryContext_Location(const FObjectInitializer& ObjectInitializer)

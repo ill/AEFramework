@@ -21,5 +21,3 @@ class FAEFrameworkGameModule
 };
 
 IMPLEMENT_GAME_MODULE(FAEFrameworkGameModule, AEFramework);
-
-DEFINE_LOG_CATEGORY(AE);
