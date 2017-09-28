@@ -224,7 +224,7 @@ public:
 	
 	/**
 	Attaches root component of actor to another component.
-	Uses a sockets on both child and parent to compute offsets.
+	Calls AttachComponentToComponent with the root component of the actor.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static void AttachActorToComponent(AActor * ChildActor, USceneComponent* Parent, 
@@ -233,10 +233,47 @@ public:
 		USceneComponent * ParentSocketSceneComponent = NULL,
 		USceneComponent * ChildSocketSceneComponent = NULL,
 		bool bWeldSimulatedBodies = true);
-
+	
 	/**
-	Attaches component to another component.
-	Uses a sockets on both child and parent to compute offsets.
+	Attaches Child component to Parent component.
+	
+	Uses offsets between sockets and components to cleanly snap objects to the right locations.
+
+	Here's an example usage.  Attach a magazine actor to a weapon actor.
+	The weapon actor has a static collision mesh with physics applied.  And a skeletal mesh component attached to the collision mesh with a socket specifying where the magazine goes.
+	The magazine actor also has a static collision mesh with physics applied.  And a skeletal mesh component attached to the collision mesh with a socket specifying that's the area that attaches to the weapon.
+	In reality, for the physics to work correctly, you want the magazine actor's static collision mesh to attach to the weapon's static collision mesh, but you want to be able to use the sockets in the 
+	attached skeletal meshes to help compute attachment offsets.
+	This function will help compute all of those offsets.  
+
+	An example usage would be:
+	AEGameplayStatics::AttachComponentToComponent(Magazine->RootComponent, Weapon->RootComponent,
+		WEAPON_MAG_ATTACHMENT_SOCKET_NAME, MAGAZINE_ATTACHMENT_SOCKET_NAME,
+		Weapon->SkeletalMeshComponent, Magazine->SkeletalMeshComponent,
+		true);
+
+	You can actually leave Weapon->SkeletalMeshComponent and Magazine->SkeletalMeshComponent NULL since they'll be automatically found by socket name.
+	Alternatively you can leave a socket name NULL and pass a component and it'll use the transform of the component instead of the socket.
+
+	AEGameplayStatics::AttachComponentToComponent(Magazine->RootComponent, Weapon->RootComponent,
+		WEAPON_MAG_ATTACHMENT_SOCKET_NAME, NAME_None,
+		NULL, Magazine->SomeRandomComponent,
+		true);
+
+
+	There are two offsets.  One is relative to the parent attachment.  And the other is relative to the child attachment.
+	The two offsets are combined to compute the full offset of child to parent.
+
+	This is from the same docs as GetRelativeTransformToSocket but applied to the child transforms for clarification.
+	If ChildSocketSceneComponent is passed in, the ChildSocketName is expected to already be on that scene component and Child and ChildSocketSceneComponent are expected to be in the same actor.
+	If ChildSocketSceneComponent is NULL, it automatically finds the scene component attached to Child that has that socket name using FindAttachedComponentWithSocket.
+	If ChildSocketName is blank it just returns the relative transform between Child and ChildSocketSceneComponent.
+
+	This is from the same docs as GetRelativeTransformToSocket but applied to the parent transforms for clarification.
+	If ParentSocketSceneComponent is passed in, the ParentSocketName is expected to already be on that scene component and Parent and ParentSocketSceneComponent are expected to be in the same actor.
+	If ParentSocketSceneComponent is NULL, it automatically finds the scene component attached to Parent that has that socket name using FindAttachedComponentWithSocket.
+	If ParentSocketName is blank it just returns the relative transform between Parent and ParentSocketSceneComponent.
+		
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static void AttachComponentToComponent(USceneComponent * Child, USceneComponent* Parent,
@@ -245,7 +282,7 @@ public:
 		USceneComponent * ParentSocketSceneComponent = NULL,
 		USceneComponent * ChildSocketSceneComponent = NULL,
 		bool bWeldSimulatedBodies = true);
-
+	
 	/**
 	Gets relative transform between root component of actor and another component.
 	Uses a sockets on both child and parent to compute offsets.

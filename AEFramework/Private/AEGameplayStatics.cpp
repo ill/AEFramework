@@ -353,7 +353,8 @@ void UAEGameplayStatics::AttachComponentToComponent(USceneComponent * Child, USc
 		FTransform RelTransform = FTransform::Identity;
 
 		//find relative transform between Parent and ParentSocketSceneComponent Socket
-		if (ParentSocketSceneComponent != Parent)
+		if (ParentSocketSceneComponent != Parent
+			&& (ParentSocketSceneComponent || ParentSocketName != NAME_None))
 		{
 			RelTransform = RelTransform * GetRelativeTransformToSocket(Parent, ParentSocketName, ParentSocketSceneComponent);
 		}
