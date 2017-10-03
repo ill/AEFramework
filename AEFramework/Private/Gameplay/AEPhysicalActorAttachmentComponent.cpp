@@ -54,7 +54,7 @@ void UAEPhysicalActorAttachmentComponent::AttachAttachmentToComponent_Implementa
 	if (AttachedActor)
 	{
 		//Attaches the actor to component's actor root
-		UAEGameplayStatics::AttachActorToComponent(AttachedActor, this->GetAttachmentRoot(),
+		UAEGameplayStatics::AttachActorToComponent(AttachedActor, GetOwner()->GetRootComponent(),
 			NAME_None, AttachComponentSocket,
 			this, NULL,
 			true);
