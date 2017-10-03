@@ -1,5 +1,5 @@
 #pragma once
-#include "Runtime/AnimGraphRuntime/Public/BoneControllers/AnimNode_SkeletalControlBase.h"
+#include "BoneControllers/AnimNode_SkeletalControlBase.h"
 #include "AEAnimNode_CopyBoneFromSceneComponent.generated.h"
 
 /**
