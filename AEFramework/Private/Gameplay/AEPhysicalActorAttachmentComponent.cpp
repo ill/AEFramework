@@ -3,8 +3,6 @@
 UAEPhysicalActorAttachmentComponent::UAEPhysicalActorAttachmentComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	bDefaultVisible = true;
-	bDefaultCollision = true;
 }
 
 void UAEPhysicalActorAttachmentComponent::BeginPlay()
@@ -21,18 +19,17 @@ void UAEPhysicalActorAttachmentComponent::SpawnAttachmentIfNeeded_Implementation
 {
 	if (!AttachedActor && AttachedActorClass)
 	{
-		if (!bForceSpawn)
+		if (bForceSpawn || ShouldSpawnAttachment())
 		{
-			if (!GetDefaultAssumedVisibility() && !GetDefaultAssumedCollision())
-			{
-				return;
-			}
+			SpawnAttachment();
+			ResetAttachmentToDefaultState();
 		}
-
-		SpawnAttachment();
-
-		ResetAttachmentToDefaultState();
 	}
+}
+
+bool UAEPhysicalActorAttachmentComponent::ShouldSpawnAttachment_Implementation() const
+{
+	return GetDefaultVisibility() && GetDefaultCollision();
 }
 
 void UAEPhysicalActorAttachmentComponent::SpawnAttachment_Implementation()
@@ -47,13 +44,13 @@ void UAEPhysicalActorAttachmentComponent::SpawnAttachment_Implementation()
 
 void UAEPhysicalActorAttachmentComponent::ResetAttachmentToDefaultState_Implementation()
 {
-	SetAttachedmentVisibility(GetDefaultAssumedVisibility());
-	SetAttachmentCollision(GetDefaultAssumedCollision());
+	SetAttachmentVisibility(GetDefaultVisibility());
+	SetAttachmentCollision(GetDefaultCollision());
 
-	AttachAttachmentToComponent();
+	AttachAttachmentToOwner();
 }
 
-void UAEPhysicalActorAttachmentComponent::AttachAttachmentToComponent_Implementation()
+void UAEPhysicalActorAttachmentComponent::AttachAttachmentToOwner_Implementation()
 {
 	if (AttachedActor)
 	{
@@ -87,10 +84,30 @@ AAEPhysicalActor * UAEPhysicalActorAttachmentComponent::DisconnectAttachment_Imp
 	return NULL;
 }
 
+bool UAEPhysicalActorAttachmentComponent::IsAttachmentAttachedToOwner_Implementation() const
+{
+	if (AttachedActor)
+	{
+		return AttachedActor->GetAttachParentActor() == GetOwner();
+	}
+
+	return false;
+}
+
+bool UAEPhysicalActorAttachmentComponent::IsAttachmentDisconnected_Implementation() const
+{
+	return AttachedActor == NULL;
+}
+
 ////////////////////////////////////
 //Visibility
 
-void UAEPhysicalActorAttachmentComponent::SetAttachedmentVisibility_Implementation(bool bNewVisible)
+bool UAEPhysicalActorAttachmentComponent::GetDefaultVisibility_Implementation() const
+{
+	return true;
+}
+
+void UAEPhysicalActorAttachmentComponent::SetAttachmentVisibility_Implementation(bool bNewVisible)
 {
 	if (bNewVisible)
 	{
@@ -114,6 +131,11 @@ void UAEPhysicalActorAttachmentComponent::SetAttachedmentVisibility_Implementati
 
 ////////////////////////////////////
 //Collision
+
+bool UAEPhysicalActorAttachmentComponent::GetDefaultCollision_Implementation() const
+{
+	return true;
+}
 
 void UAEPhysicalActorAttachmentComponent::SetAttachmentCollision_Implementation(bool bCollisionEnabled)
 {

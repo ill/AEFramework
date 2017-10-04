@@ -45,12 +45,18 @@ public:
     FName AttachComponentSocket;
 
 	/**
-	Spawns the attached actor into its default state if it doesn't exist
+	Spawns the attached actor if it doesn't exist and ShouldSpawnAttachment returns true
 	@param bForceSpawn If false, it'll only spawn the prop if it by default has physics or collision enabled
 		If true it'll spawn it regardless of defaults, assuming it's about to be set visible or collision enabled
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
 	void SpawnAttachmentIfNeeded(bool bForceSpawn = false);
+
+	/**
+	Called by SpawnAttachmentIfNeeded().  Return true if needed.
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
+	bool ShouldSpawnAttachment() const;
 
 protected:
 	/**
@@ -68,10 +74,10 @@ public:
     void ResetAttachmentToDefaultState();
 
 	/**
-	Attaches the attached actor to this component
+	Attaches the attached actor to the correct spot on owning actor relative to this component
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
-    void AttachAttachmentToComponent();
+    void AttachAttachmentToOwner();
 
 	/**
 	Completely disconnects the prop and this component has a reference to it.
@@ -81,60 +87,43 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
     AAEPhysicalActor * DisconnectAttachment();
 
+	/**
+	Checks if the attachment is currently attached to the owning actor.
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
+	bool IsAttachmentAttachedToOwner() const;
+
+	/**
+	Checks if the attachment is completely disconnected.  Basically returns whether or not AttachedActor is NULL
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
+	bool IsAttachmentDisconnected() const;
+
 public:
 	////////////////////////////////////
 	//Visibility
 
 	/**
-	Whether or not the prop is visible by default.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visibility")
-	uint32 bDefaultVisible:1;
-
-	/**
-	Current override of the default visibility state.
-	It could be useful to force a magazine that's normally visible by default to stay invisible if the weapon is unloaded.
-	No effect if the prop is attached to the character by default.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visibility")
-	TEnumAsByte<AEDefaultBoolOverrideState::Type> ForcedDefaultVisibilityState;
-
-	/**
 	Gets the visibility state that ResetAttachmentToDefaultState() would set to if it was called.
-	Returns bDefaultVisible affected by ForcedDefaultVisibilityState
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Visibility")
-	bool GetDefaultAssumedVisibility() const;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Visibility")
+	bool GetDefaultVisibility() const;
 
 	/**
 	Sets whether or not the attached actor is visible.
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Visibility")
-	void SetAttachedmentVisibility(bool bNewVisible);
+	void SetAttachmentVisibility(bool bNewVisible);
 
 public:
 	////////////////////////////////////
 	//Collision
-
-	/**
-	Whether or not the prop has collision enabled by default.
-	A magazine attached to a weapon could contribute with collision if it's attached and visible.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
-	uint32 bDefaultCollision:1;
-
-	/**
-	Current override of the default collision state.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
-	TEnumAsByte<AEDefaultBoolOverrideState::Type> ForcedDefaultCollisionState;
-
+	
 	/**
 	Gets the collision state that ResetAttachmentToDefaultState() would set to if it was called.
-	Returns bDefaultCollision affected by ForcedDefaultCollisionState
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Collision")
-	bool GetDefaultAssumedCollision() const;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Collision")
+	bool GetDefaultCollision() const;
 
 	/**
 	Sets whether or not the attachment's collision is enabled.
@@ -146,20 +135,4 @@ public:
 FORCEINLINE_DEBUGGABLE AAEPhysicalActor * UAEPhysicalActorAttachmentComponent::GetOwnerPhysicalActor() const
 {
 	return Cast<AAEPhysicalActor>(GetOwner());
-}
-
-////////////////////////////////////
-//Visibility
-
-FORCEINLINE_DEBUGGABLE bool UAEPhysicalActorAttachmentComponent::GetDefaultAssumedVisibility() const
-{
-	return GetOverrideBoolValue(bDefaultVisible, ForcedDefaultVisibilityState);
-}
-
-////////////////////////////////////
-//Collision
-
-FORCEINLINE_DEBUGGABLE bool UAEPhysicalActorAttachmentComponent::GetDefaultAssumedCollision() const
-{
-	return GetOverrideBoolValue(bDefaultCollision, ForcedDefaultCollisionState);
 }
