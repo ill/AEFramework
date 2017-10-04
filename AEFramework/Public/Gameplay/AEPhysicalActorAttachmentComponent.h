@@ -52,6 +52,15 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
 	void SpawnAttachmentIfNeeded(bool bForceSpawn = false);
 
+protected:
+	/**
+	Performs the actual spawning of the actor.  Don't call this directly. Call SpawnAttachmentIfNeeded.
+	ResetAttachmentToDefaultState() is called outside of this function by SpawnAttachmentIfNeeded.
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attachment")
+	void SpawnAttachment();
+
+public:
 	/**
     Reset the prop to default visibility and collision states
     */

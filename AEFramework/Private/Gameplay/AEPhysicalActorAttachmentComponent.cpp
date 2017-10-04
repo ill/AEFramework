@@ -23,22 +23,26 @@ void UAEPhysicalActorAttachmentComponent::SpawnAttachmentIfNeeded_Implementation
 	{
 		if (!bForceSpawn)
 		{
-			if (!GetOverrideBoolValue(bDefaultVisible, ForcedDefaultVisibilityState)
-				&& !GetOverrideBoolValue(bDefaultCollision, ForcedDefaultCollisionState))
+			if (!GetDefaultAssumedVisibility() && !GetDefaultAssumedCollision())
 			{
 				return;
 			}
 		}
 
-		FActorSpawnParameters SpawnParams;
+		SpawnAttachment();
 
-		SpawnParams.Owner = GetOwner();
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		AttachedActor = GetWorld()->SpawnActor<AAEPhysicalActor>(AttachedActorClass, SpawnParams);
-		
 		ResetAttachmentToDefaultState();
 	}
+}
+
+void UAEPhysicalActorAttachmentComponent::SpawnAttachment_Implementation()
+{
+	FActorSpawnParameters SpawnParams;
+
+	SpawnParams.Owner = GetOwner();
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AttachedActor = GetWorld()->SpawnActor<AAEPhysicalActor>(AttachedActorClass, SpawnParams);
 }
 
 void UAEPhysicalActorAttachmentComponent::ResetAttachmentToDefaultState_Implementation()
